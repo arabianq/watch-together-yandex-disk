@@ -1,0 +1,29 @@
+HOST = "0.0.0.0"
+PORT = 8080
+CONNECTION_TIMEOUT_SECONDS = 30
+
+USE_DARK_THEME = True
+ENABLE_LOGGING = True
+
+YANDEX_CONFIGS = [
+    # ("your token", "path to dir on disk")  # Alexander Tarasov
+]
+
+TMDB_API_KEY = "your api key"
+TMDB_LANG = "en-US"
+
+CACHE_MAXSIZE = 1024
+CACHE_TTL = 300
+
+MOVIES_DB_UPDATE_INTERVAL_SECONDS = 300
+REMOVE_INACTIVE_USERS_INTERVAL_SECONDS = 300
+ROOMS_UPDATE_INTERVAL_SECONDS = 0.5
+MAX_DELAY_SECONDS = 5
+MAX_USER_INACTIVE_HOURS = 168
+
+PASSWORD = "1234"  # webui password
+SECRET = "secret-key"  # just type random string here
+
+PROXIES = [
+
+]
