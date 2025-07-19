@@ -15,7 +15,7 @@ class ContentDialog(ui.dialog):
         with self:
             self.card = ui.card()
             self.card.classes("h-max no-shadow")
-            self.card.style("min-width: 40%; min-height: 60%; border-radius: 15px")
+            self.card.style("min-width: 20%; border-radius: 15px")
 
         with self.card:
             self.title_column = ui.column(wrap=False)
@@ -28,14 +28,9 @@ class ContentDialog(ui.dialog):
             ui.html(f"<b><i>{", ".join(self.content.genres)}</i></b>").style("font-size: 12px")
 
         with self.card:
-            self.main_row = ui.row(wrap=False)
-            self.main_row.classes("w-full h-full")
-
-        with self.main_row:
-            ui.image(source=self.content.poster_url).style("width: 50%; border-radius: 15px")
-
             self.additional_info_column = ui.column(wrap=False)
-            self.additional_info_column.style("width: 50%")
+            self.additional_info_column.classes("w-full")
+            self.additional_info_column.style("width: 50%; gap: 0")
 
         with self.additional_info_column:
             release_date = self.content.release_date.split("-")[::-1]
