@@ -1,0 +1,7 @@
+venv
+.venv
+__pycache__
+.idea
+.nicegui
+data
+config.py
