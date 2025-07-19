@@ -6,7 +6,7 @@ USE_DARK_THEME = True
 ENABLE_LOGGING = True
 
 YANDEX_CONFIGS = [
-    # ("your token", "path to dir on disk")  # Alexander Tarasov
+    # ("your token", "path to dir on disk")
 ]
 
 TMDB_API_KEY = "your api key"
