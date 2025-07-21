@@ -202,6 +202,8 @@ async def page(room_uid: str):
     tmdb_id = globals.ROOMS_DATABASE.by_uid[room_uid].tmdb_id
     content = globals.MOVIES_DATABASE.by_tmdb_id[tmdb_id]
 
+    ui.page_title(content.title)
+
     if content.type == "movie":
         video = content.file_url
         poster = content.backdrop_url
