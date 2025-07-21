@@ -69,7 +69,7 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
     users_card.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     with users_card, ui.scroll_area():
-        for user_uid in room.connected_users:
+        for user_uid in set(room.connected_users):
             user = globals.USERS_DATABASE.by_uid[user_uid]
             with ui.card().classes("w-full"):
                 ui.label(user.username)
