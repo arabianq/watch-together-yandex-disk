@@ -1,5 +1,6 @@
 from nicegui import ui, app
 
+import config
 import globals
 from users.classes import User
 
@@ -48,3 +49,9 @@ async def update_user():
             ui.navigate.to("/")
     else:
         ui.navigate.to("/")
+
+
+async def default_page_setup():
+    ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
+    await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
+    ui.timer(60, update_user)

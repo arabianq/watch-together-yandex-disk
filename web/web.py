@@ -1,38 +1,30 @@
 from nicegui import ui
 
-import config
 from web.custom_widgets.PlyrVideoPlayer import install_plyr
-from web.misc import update_user
+from web.misc import default_page_setup
 from web.pages import *
 
 
 @ui.page("/")
 async def index():
-    ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
-    await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
+    await default_page_setup()
     await index_page.page()
 
 
 @ui.page("/contents")
 async def movies():
-    ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
-    await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
-    ui.timer(60, update_user)
+    await default_page_setup()
     await movies_page.page()
 
 
 @ui.page("/rooms")
 async def rooms():
-    ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
-    await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
-    ui.timer(60, update_user)
+    await default_page_setup()
     await rooms_page.page()
 
 
 @ui.page("/room/{room_uid}")
 async def room(room_uid: str):
-    ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
     install_plyr()
-    await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
-    ui.timer(60, update_user)
+    await default_page_setup()
     await room_page.page(room_uid)
