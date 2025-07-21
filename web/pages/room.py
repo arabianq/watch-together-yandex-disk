@@ -7,6 +7,7 @@ from nicegui import ui
 import config
 import globals
 from rooms.state import PlayerState
+from web.custom_widgets import PlyrVideoPlayer
 from web.custom_widgets.header import draw_header
 from web.misc import check_user
 
@@ -40,7 +41,7 @@ def _leave_room(room_uid: str, user_uid: str):
 
 
 def _change_episode(room_uid: str, tmdb_id: int, season_number: int, episode_number: int, seasons_column: ui.column,
-                    video_player: ui.video, player_data: dict):
+                    video_player: PlyrVideoPlayer, player_data: dict):
     try:
         new_episode = globals.MOVIES_DATABASE.by_tmdb_id[tmdb_id].seasons[season_number - 1].episodes[
             episode_number - 1]
@@ -73,7 +74,7 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
             ui.label(user.username)
 
 
-def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: ui.video,
+def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: PlyrVideoPlayer,
                   player_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     tv_show = globals.MOVIES_DATABASE.by_tmdb_id[tmdb_id]
@@ -95,41 +96,38 @@ def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_
                         episode_button.disable()
 
 
-async def _on_seeked(room_uid: str, video_player: ui.video, player_data: dict):
+async def _on_seeked(room_uid: str, video_player: PlyrVideoPlayer, player_data: dict):
     try:
-        position = await ui.run_javascript(f'getHtmlElement({video_player.id}).currentTime')
+        position = await video_player.get_current_position()
     except TimeoutError:
         return
     globals.ROOMS_DATABASE.by_uid[room_uid].seek(position)
     player_data["position"] = position
 
 
-async def _on_play(room_uid: str, video_player: ui.video, player_data: dict):
+async def _on_play(room_uid: str, player_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     room.play()
     player_data["state"] = PlayerState.PLAYING
-    await _on_seeked(room_uid, video_player, player_data)
 
 
-async def _on_pause(room_uid: str, video_player: ui.video, player_data: dict):
+async def _on_pause(room_uid: str, player_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     room.pause()
     player_data["state"] = PlayerState.PAUSED
-    await _on_seeked(room_uid, video_player, player_data)
 
 
-async def _on_stop(room_uid: str, video_player: ui.video, player_data: dict):
+async def _on_stop(room_uid: str, video_player: PlyrVideoPlayer, player_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     room.stop()
     player_data["state"] = PlayerState.STOPPED
-    await _on_seeked(room_uid, video_player, player_data)
     video_player.pause()
 
 
-async def _sync(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: ui.video,
+async def _sync(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: PlyrVideoPlayer,
                 player_data: dict):
     try:
-        player_data["position"] = await ui.run_javascript(f'getHtmlElement({video_player.id}).currentTime')
+        player_data["position"] = await video_player.get_current_position()
     except TimeoutError:
         return
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
@@ -146,9 +144,11 @@ async def _sync(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_pl
                 video_player.pause()
                 player_data["state"] = PlayerState.STOPPED
 
-    if abs(player_data["position"] - room.player_position) > config.MAX_DELAY_SECONDS:
-        video_player.seek(room.player_position)
-        player_data["position"] = room.player_position
+    if not await video_player.is_seeking():
+        if (player_data["state"] != PlayerState.PLAYING
+                or abs(player_data["position"] - room.player_position) > config.MAX_DELAY_SECONDS):
+            video_player.seek(room.player_position)
+            player_data["position"] = room.player_position
 
     if player_data["season"] != room.current_season or player_data["episode"] != room.current_episode:
         player_data["season"], player_data["episode"] = room.current_season, room.current_episode
@@ -180,23 +180,21 @@ async def page(room_uid: str):
     with ui.row(wrap=False).classes("w-full"):
         player_card = ui.card()
         player_card.classes("no-shadow")
-        player_card.style("width: 80%; height: 85vh; border-radius: 15px")
+        player_card.style("width: 80%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
         player_card.style("display: flex; justify-content: center; align-items: center;")
 
         users_card = ui.card()
         users_card.classes("no-shadow")
-        users_card.style("width: 20%; height: 85vh; border-radius: 15px")
+        users_card.style("width: 20%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
         ui.timer(1, partial(_draw_users_list, room_uid, users_card))
 
     with player_card:
-        video_player = ui.video(src="")
-        video_player.classes("w-full h-full")
-        video_player.style("border-radius: 15px")
+        video_player = PlyrVideoPlayer(src="")
 
-        video_player.on("play", partial(_on_play, room_uid, video_player, player_data))
-        video_player.on("pause", partial(_on_pause, room_uid, video_player, player_data))
+        video_player.on("play", partial(_on_play, room_uid, player_data))
+        video_player.on("pause", partial(_on_pause, room_uid, player_data))
         video_player.on("seeked", partial(_on_seeked, room_uid, video_player, player_data))
-        video_player.on("ended", partial(_on_stop, room_uid, video_player, player_data))
+        video_player.on("end", partial(_on_stop, room_uid, video_player, player_data))
 
     seasons_column = ui.column().classes("w-full")
     seasons_column.visible = False
@@ -205,9 +203,11 @@ async def page(room_uid: str):
     content = globals.MOVIES_DATABASE.by_tmdb_id[tmdb_id]
 
     if content.type == "movie":
-        source = content.file_url
+        video = content.file_url
+        poster = content.backdrop_url
     elif content.type == "tv":
-        source = content.seasons[0].episodes[0].file_url
+        video = content.seasons[0].episodes[0].file_url
+        poster = ""
 
         room = globals.ROOMS_DATABASE.by_uid[room_uid]
         room.current_season, room.current_episode = 1, 1
@@ -216,9 +216,10 @@ async def page(room_uid: str):
         seasons_column.visible = True
         _draw_seasons(room_uid, tmdb_id, seasons_column, video_player, player_data)
     else:
-        source = ""
+        video = ""
+        poster = ""
 
-    video_player.set_source(source)
+    video_player.set_source(video, poster)
 
     ui.timer(1, partial(_sync, room_uid, tmdb_id, seasons_column, video_player, player_data))
 

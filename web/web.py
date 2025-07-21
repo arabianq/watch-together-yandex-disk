@@ -1,6 +1,7 @@
 from nicegui import ui
 
 import config
+from web.custom_widgets.PlyrVideoPlayer import install_plyr
 from web.misc import update_user
 from web.pages import *
 
@@ -31,10 +32,7 @@ async def rooms():
 @ui.page("/room/{room_uid}")
 async def room(room_uid: str):
     ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
-    ui.add_head_html('''
-                    <link href="https://vjs.zencdn.net/7.21.1/video-js.css" rel="stylesheet" />
-                    <script src="https://vjs.zencdn.net/7.21.1/video.min.js"></script>
-                    ''')
+    install_plyr()
     await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
     ui.timer(60, update_user)
     await room_page.page(room_uid)
