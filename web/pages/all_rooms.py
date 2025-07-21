@@ -1,3 +1,5 @@
+import asyncio
+
 from nicegui import ui
 
 import globals
@@ -11,11 +13,16 @@ async def page():
     if not await check_user():
         ui.navigate.to("/")
 
+    if not (rooms := globals.ROOMS_DATABASE.rooms):
+        ui.notify("No rooms found, redirecting to /contents...")
+        await asyncio.sleep(1)
+        ui.navigate.to("/contents")
+
     await draw_header()
 
     main_row = ui.row().classes("w-full")
 
-    for room in globals.ROOMS_DATABASE.rooms:
+    for room in rooms:
         with main_row, ui.link(target=f"/room/{room.uid}"), ui.card().style("border-radius: 15px"):
             content = globals.MOVIES_DATABASE.by_tmdb_id[room.tmdb_id]
 
