@@ -3,7 +3,7 @@
 `Watch Together` is a self-hosted web application that allows you and your friends to watch movies and TV shows in sync.
 It uses Yandex.Disk for media file storage and fetches rich metadata from The Movie Database (TMDB) to create an elegant
 browsing experience. The application is built with Python and the [NiceGUI](https://nicegui.io/) framework for a
-seamless web interface.
+seamless web interface and uses [Plyr](https://github.com/sampotts/plyr) as a web player.
 
 ## Features
 
@@ -106,3 +106,4 @@ This project relies on several key Python libraries:
 * [PyJWT](https://pyjwt.readthedocs.io/): For handling JSON Web Tokens for user sessions.
 * [orjson](https://github.com/ijl/orjson): For fast JSON serialization/deserialization.
 * [bcrypt](https://pypi.org/project/bcrypt/): For hashing user identifiers.
+* [Plyr](https://github.com/sampotts/plyr): For playing video files
