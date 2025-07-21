@@ -69,10 +69,21 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
     users_card.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     with users_card, ui.scroll_area():
-        for user_uid in set(room.connected_users):
+        for user_uid in list(dict.fromkeys(room.connected_users)):
             user = globals.USERS_DATABASE.by_uid[user_uid]
             with ui.card().classes("w-full"):
                 ui.label(user.username)
+
+
+def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: ui.scroll_area):
+    messages_scroll_area.clear()
+    room = globals.ROOMS_DATABASE.by_uid[room_uid]
+    with messages_scroll_area:
+        for user_uid, message_text in room.messages:
+            user = globals.USERS_DATABASE.by_uid.get(user_uid)
+            username = user.username if user else "DELETED"
+            ui.chat_message(name=username, text=message_text)
+    messages_scroll_area.scroll_to(percent=100)
 
 
 def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: PlyrVideoPlayer,
@@ -181,20 +192,47 @@ async def page(room_uid: str):
     with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full"):
         player_card = ui.card()
         player_card.classes("no-shadow")
+        player_card.style("display: flex; justify-content: center; align-items: center; border-radius: 15px")
         if portrait:
-            player_card.style("width: 100%; border-radius: 15px")
+            player_card.style("width: 100%;")
         else:
-            player_card.style("width: 80%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
-        player_card.style("display: flex; justify-content: center; align-items: center;")
+            player_card.style("width: 80%; min-height: 80vh; max-height: 80vh;")
 
-        users_card = ui.card()
-        users_card.classes("no-shadow")
-        if portrait:
-            users_card.style("width: 100%; border-radius: 15px")
-        else:
-            users_card.style("width: 20%; min-height: 40vh; max-height: 40vh; border-radius: 15px")
+        with ui.column(wrap=False) as column:
+            if portrait:
+                column.classes("w-full")
+            else:
+                column.style("width: 20%")
 
-        ui.timer(1, partial(_draw_users_list, room_uid, users_card))
+            users_card = ui.card()
+            users_card.classes("w-full no-shadow")
+            users_card.style("border-radius: 15px")
+            if portrait:
+                users_card.style("max-height: 20vh;")
+            else:
+                users_card.style("min-height: 39vh; max-height: 39vh;")
+            ui.timer(0.1, partial(_draw_users_list, room_uid, users_card))
+
+            messages_card = ui.card()
+            messages_card.classes("w-full no-shadow")
+            messages_card.style("border-radius: 15px")
+            if portrait:
+                messages_card.style("max-height: 20vh;")
+            else:
+                messages_card.style("min-height: 39vh; max-height: 39vh;")
+
+            with messages_card:
+                messages_scroll_area = ui.scroll_area()
+
+                def send_message():
+                    if text := message_input.value.strip():
+                        globals.ROOMS_DATABASE.by_uid[room_uid].messages.append((user.uid, text))
+
+                with ui.row(wrap=False).classes("w-full justify-between"):
+                    message_input = ui.input("Message").classes("w-full")
+                    ui.button(icon="send", on_click=send_message)
+
+            ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area))
 
     with player_card:
         video_player = PlyrVideoPlayer(src="", poster_url="", minimal=portrait)

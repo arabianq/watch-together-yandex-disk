@@ -20,6 +20,7 @@ class Room:
     current_episode: int | None = None
 
     connected_users: list[str] = field(default_factory=list)
+    messages: list[tuple[str, str]] = field(default_factory=list)
 
     def __init__(self, uid: str, tmdb_id: int):
         self.uid = uid
@@ -32,6 +33,7 @@ class Room:
         self.current_episode = None
 
         self.connected_users = []
+        self.messages = []
 
         content = globals.MOVIES_DATABASE.by_tmdb_id[tmdb_id]
         if content.type == "tv":
