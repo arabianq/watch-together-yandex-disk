@@ -192,37 +192,38 @@ async def page(room_uid: str):
         "episode": None
     }
 
-    with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full"):
+    with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full items-stretch"):
         player_card = ui.card()
         player_card.classes("no-shadow items-center")
         player_card.style("border-radius: 15px")
         if portrait:
             player_card.style("width: 100%;")
         else:
-            player_card.style("width: 80%; min-height: 80vh; max-height: 80vh;")
+            player_card.style("width: 80%; min-height: 80vh;")
 
         with ui.column(wrap=False) as column:
             if portrait:
                 column.classes("w-full")
             else:
-                column.style("width: 20%")
+                column.classes("grow")
+                column.style("width: 20%;")
 
             users_card = ui.card()
-            users_card.classes("w-full no-shadow")
+            users_card.classes("w-full grow no-shadow")
             users_card.style("border-radius: 15px")
             if portrait:
                 users_card.style("max-height: 20vh;")
             else:
-                users_card.style("min-height: 39vh; max-height: 39vh;")
+                users_card.style("min-height: 39vh;")
             ui.timer(0.1, partial(_draw_users_list, room_uid, users_card))
 
             messages_card = ui.card()
-            messages_card.classes("w-full no-shadow")
+            messages_card.classes("w-full grow no-shadow")
             messages_card.style("border-radius: 15px")
             if portrait:
                 messages_card.style("max-height: 20vh;")
             else:
-                messages_card.style("min-height: 39vh; max-height: 39vh;")
+                messages_card.style("min-height: 39vh;")
 
             with messages_card:
                 messages_scroll_position = {"_": 0}
