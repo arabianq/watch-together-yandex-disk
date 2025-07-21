@@ -6,7 +6,7 @@ from web.misc import logout, check_user
 async def draw_header():
     with ui.header(wrap=False):
         with ui.row(wrap=False).classes("w-full justify-between"):
-            ui.button(icon="home", on_click=lambda: ui.navigate.to("/"))
+            ui.button(icon="home", on_click=lambda: ui.navigate.to("/contents"))
             ui.button(text="Rooms", icon="movie", on_click=lambda: ui.navigate.to("/rooms"))
 
             with ui.row(wrap=False).classes("items-center"):
