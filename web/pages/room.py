@@ -68,7 +68,7 @@ def _change_episode(room_uid: str, tmdb_id: int, season_number: int, episode_num
 def _draw_users_list(room_uid: str, users_card: ui.card):
     users_card.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
-    with users_card, ui.scroll_area():
+    with users_card, ui.scroll_area().classes("grow"):
         ui.label("Members").classes("text-lg font-bold q-mb-md")
         for user_uid in list(dict.fromkeys(room.connected_users)):
             user = globals.USERS_DATABASE.by_uid[user_uid]
