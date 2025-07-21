@@ -69,6 +69,7 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
     users_card.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     with users_card, ui.scroll_area():
+        ui.label("Members").classes("text-lg font-bold q-mb-md")
         for user_uid in list(dict.fromkeys(room.connected_users)):
             user = globals.USERS_DATABASE.by_uid[user_uid]
             with ui.card().classes("w-full"):
@@ -226,6 +227,8 @@ async def page(room_uid: str):
                 messages_card.style("min-height: 39vh;")
 
             with messages_card.classes("justify-between"):
+                ui.label("Chat").classes("text-lg font-bold q-mb-md")
+
                 messages_scroll_position = {"_": 0}
 
                 def on_messages_scroll(e):
