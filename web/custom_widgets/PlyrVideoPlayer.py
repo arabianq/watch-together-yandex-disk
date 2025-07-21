@@ -71,11 +71,11 @@ class PlyrVideoPlayer:
             raise ValueError("Supported events: 'play', 'pause', 'end', 'seeked'")
         ui.on(mapping[event], callback)
 
-    async def is_seeking(self):
-        return await ui.run_javascript(f"window.{self.player_var}.seeking")
-
-    async def get_audio_tracks(self):
-        return await ui.run_javascript(f"window.{self.player_var}.audio_tracks")
+    async def is_seeking(self) -> bool:
+        try:
+            return await ui.run_javascript(f"window.{self.player_var}.seeking")
+        except TimeoutError:
+            return False
 
     def play(self):
         ui.run_javascript(f"window.{self.player_var}.play();")
