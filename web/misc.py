@@ -58,7 +58,11 @@ async def default_page_setup():
 
 
 async def is_portrait():
-    width, height = await ui.run_javascript("return [window.screen.availWidth, window.screen.availHeight]")
+    try:
+        width, height = await ui.run_javascript("return [window.screen.availWidth, window.screen.availHeight]")
+    except TimeoutError:
+        return False
+
     if width > height:
         return False
     return True
