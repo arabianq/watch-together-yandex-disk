@@ -7,7 +7,6 @@ from web.pages import *
 
 @ui.page("/")
 async def index():
-    await default_page_setup()
     await index_page.page()
 
 
