@@ -97,7 +97,8 @@ def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_
         season = tv_show.seasons[season_number - 1]
 
         with seasons_column, ui.card().classes("w-full no-shadow").style("border-radius: 15px"):
-            with ui.expansion(text=season.title, value=True).classes("w-full"), ui.row().classes("w-full"):
+            with (ui.expansion(text=season.title, value=True).classes("w-full"),
+                  ui.row(align_items="baseline").classes("w-full")):
                 episodes = tv_show.seasons[season_number - 1].episodes
                 for episode_number in range(1, len(episodes) + 1):
                     episode_button = ui.button(str(episode_number),
@@ -193,8 +194,8 @@ async def page(room_uid: str):
 
     with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full"):
         player_card = ui.card()
-        player_card.classes("no-shadow")
-        player_card.style("display: flex; justify-content: center; align-items: center; border-radius: 15px")
+        player_card.classes("no-shadow items-center")
+        player_card.style("border-radius: 15px")
         if portrait:
             player_card.style("width: 100%;")
         else:
@@ -238,9 +239,9 @@ async def page(room_uid: str):
                         _draw_messages(room_uid, user.uid, messages_scroll_area, messages_scroll_position)
                         messages_scroll_area.scroll_to(percent=100)
 
-                with ui.row(wrap=False).classes("w-full justify-between"):
-                    message_input = ui.input("Message").classes("w-full")
-                    ui.button(icon="send", on_click=send_message).on("keyup.enter", send_message)
+                with ui.row(wrap=False).classes("w-full items-center"):
+                    message_input = ui.input("Message").classes("w-full").props("dense outlined")
+                    ui.button(icon="send", on_click=send_message).on("keyup.enter", send_message).props("rounded")
 
             ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area, messages_scroll_position))
 

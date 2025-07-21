@@ -54,7 +54,7 @@ class ContentDialog(ui.dialog):
                     ui.html(f"<b><i>Finished</i></b>").style("font-size: 12px")
 
         with self.card, ui.row(wrap=False).classes("w-full").style("display: flex; justify-content: center;"):
-            ui.button("Create Room").on_click(self.create_room)
+            ui.button("Create Room").on_click(self.create_room).props("rounded push")
 
     async def create_room(self):
         room = await globals.ROOMS_DATABASE.create_room(self.content.tmdb_id)
