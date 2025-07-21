@@ -55,3 +55,10 @@ async def default_page_setup():
     ui.add_head_html("<meta name=\"referrer\" content=\"no-referrer\" />")
     await ui.context.client.connected(timeout=config.CONNECTION_TIMEOUT_SECONDS)
     ui.timer(60, update_user)
+
+
+async def is_portrait():
+    width, height = await ui.run_javascript("return [window.screen.availWidth, window.screen.availHeight]")
+    if width > height:
+        return False
+    return True
