@@ -23,13 +23,14 @@ async def page():
     main_row = ui.row().classes("w-full")
 
     for room in rooms:
-        with main_row, ui.link(target=f"/room/{room.uid}"), ui.card().style("border-radius: 15px"):
+        with (main_row, ui.link(target=f"/room/{room.uid}").style("text-decoration: none"),
+              ui.card().classes("no-shadow").style("border-radius: 15px;")):
             content = globals.MOVIES_DATABASE.by_tmdb_id[room.tmdb_id]
 
             with ui.row(wrap=False):
-                ui.image(content.poster_url).style("width: 20%")
+                ui.image(content.poster_url).style("width: 100px; border-radius: 15px")
 
-                with ui.column(wrap=False).classes("").style("gap: 0px"):
+                with ui.column(wrap=False).style("gap: 0px;"):
                     ui.html(f"{room.uid}")
                     ui.html(f"<b>{content.title}</b>")
 
