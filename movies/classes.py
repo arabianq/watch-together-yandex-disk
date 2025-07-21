@@ -42,6 +42,7 @@ class Episode:
 
     title: str = None
     file_url: str = None
+    still_url: str = None
     episode_type: str = None
     release_date: str = None
 

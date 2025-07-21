@@ -128,6 +128,8 @@ async def _fetch_tv_show(tv_show: TVShow) -> TVShow:
                 vote_average=episode_response_json.get("vote_average"),
                 title=episode_response_json.get("name", str(episode_number)),
                 file_url=raw_episode.file_url,
+                still_url=f"{_BASE_IMAGE_URL}original{episode_response_json['still_path']}" if tv_response_json.get(
+                    "poster_path") else None,
                 episode_type=episode_response_json.get("episode_type"),
                 release_date=episode_response_json.get("air_date"),
             ))
