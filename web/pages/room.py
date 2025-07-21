@@ -59,7 +59,7 @@ def _change_episode(room_uid: str, tmdb_id: int, season_number: int, episode_num
     video_player.seek(0)
 
     video_player.pause()
-    video_player.set_source(new_episode.file_url)
+    video_player.set_source(new_episode.file_url, new_episode.still_url)
 
     seasons_column.clear()
     _draw_seasons(room_uid, tmdb_id, seasons_column, video_player, player_data)
@@ -207,7 +207,7 @@ async def page(room_uid: str):
         poster = content.backdrop_url
     elif content.type == "tv":
         video = content.seasons[0].episodes[0].file_url
-        poster = ""
+        poster = content.seasons[0].episodes[0].still_url
 
         room = globals.ROOMS_DATABASE.by_uid[room_uid]
         room.current_season, room.current_episode = 1, 1
