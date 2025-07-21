@@ -75,7 +75,7 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
                 ui.label(user.username)
 
 
-def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: ui.scroll_area):
+def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: ui.scroll_area, scroll_position: dict):
     messages_scroll_area.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
     with messages_scroll_area:
@@ -83,7 +83,9 @@ def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: u
             user = globals.USERS_DATABASE.by_uid.get(user_uid)
             username = user.username if user else "DELETED"
             ui.chat_message(name=username, text=message_text, sent=user_uid == current_user_uid).classes("w-full")
-    messages_scroll_area.scroll_to(percent=100)
+
+    if scroll_position["_"] == 1:
+        messages_scroll_area.scroll_to(percent=100)
 
 
 def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: PlyrVideoPlayer,
@@ -222,17 +224,25 @@ async def page(room_uid: str):
                 messages_card.style("min-height: 39vh; max-height: 39vh;")
 
             with messages_card:
-                messages_scroll_area = ui.scroll_area().classes("w-full")
+                messages_scroll_position = {"_": 0}
+
+                def on_messages_scroll(e):
+                    messages_scroll_position["_"] = e.vertical_percentage
+
+                messages_scroll_area = ui.scroll_area(on_scroll=on_messages_scroll).classes("w-full")
 
                 def send_message():
                     if text := message_input.value.strip():
                         globals.ROOMS_DATABASE.by_uid[room_uid].messages.append((user.uid, text))
+                        message_input.value = ""
+                        _draw_messages(room_uid, user.uid, messages_scroll_area, messages_scroll_position)
+                        messages_scroll_area.scroll_to(percent=100)
 
                 with ui.row(wrap=False).classes("w-full justify-between"):
                     message_input = ui.input("Message").classes("w-full")
                     ui.button(icon="send", on_click=send_message)
 
-            ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area))
+            ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area, messages_scroll_position))
 
     with player_card:
         video_player = PlyrVideoPlayer(src="", poster_url="", minimal=portrait)
