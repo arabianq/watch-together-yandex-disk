@@ -225,7 +225,7 @@ async def page(room_uid: str):
             else:
                 messages_card.style("min-height: 39vh;")
 
-            with messages_card:
+            with messages_card.classes("justify-between"):
                 messages_scroll_position = {"_": 0}
 
                 def on_messages_scroll(e):
