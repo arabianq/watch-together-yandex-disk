@@ -4,7 +4,7 @@ from nicegui import ui
 
 import globals
 from web.custom_widgets import draw_header
-from web.misc import check_user
+from web.misc import check_user, is_portrait
 
 
 async def page():
@@ -18,12 +18,17 @@ async def page():
         await asyncio.sleep(1)
         ui.navigate.to("/contents")
 
+    portrait = is_portrait()
+
     await draw_header()
 
-    main_row = ui.row().classes("w-full")
+    if portrait:
+        container = ui.column().classes("w-full items-center")
+    else:
+        container = ui.row().classes("w-full items-center")
 
     for room in rooms:
-        with (main_row, ui.link(target=f"/room/{room.uid}").style("text-decoration: none"),
+        with (container, ui.link(target=f"/room/{room.uid}").style("text-decoration: none"),
               ui.card().classes("no-shadow").style("border-radius: 15px;")):
             content = globals.MOVIES_DATABASE.by_tmdb_id[room.tmdb_id]
 
