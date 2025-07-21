@@ -82,7 +82,7 @@ def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: u
         for user_uid, message_text in room.messages:
             user = globals.USERS_DATABASE.by_uid.get(user_uid)
             username = user.username if user else "DELETED"
-            ui.chat_message(name=username, text=message_text)
+            ui.chat_message(name=username, text=message_text, sent=user_uid == current_user_uid).classes("w-full")
     messages_scroll_area.scroll_to(percent=100)
 
 
@@ -222,7 +222,7 @@ async def page(room_uid: str):
                 messages_card.style("min-height: 39vh; max-height: 39vh;")
 
             with messages_card:
-                messages_scroll_area = ui.scroll_area()
+                messages_scroll_area = ui.scroll_area().classes("w-full")
 
                 def send_message():
                     if text := message_input.value.strip():
