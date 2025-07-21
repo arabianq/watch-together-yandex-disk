@@ -9,7 +9,7 @@ import globals
 from rooms.state import PlayerState
 from web.custom_widgets import PlyrVideoPlayer
 from web.custom_widgets.header import draw_header
-from web.misc import check_user
+from web.misc import check_user, is_portrait
 
 
 def _check_room(room_uid: str):
@@ -68,10 +68,11 @@ def _change_episode(room_uid: str, tmdb_id: int, season_number: int, episode_num
 def _draw_users_list(room_uid: str, users_card: ui.card):
     users_card.clear()
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
-    for user_uid in room.connected_users:
-        user = globals.USERS_DATABASE.by_uid[user_uid]
-        with users_card, ui.card().classes("w-full"):
-            ui.label(user.username)
+    with users_card, ui.scroll_area():
+        for user_uid in room.connected_users:
+            user = globals.USERS_DATABASE.by_uid[user_uid]
+            with ui.card().classes("w-full"):
+                ui.label(user.username)
 
 
 def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_player: PlyrVideoPlayer,
@@ -82,10 +83,8 @@ def _draw_seasons(room_uid: str, tmdb_id: int, seasons_column: ui.column, video_
     for season_number in range(1, tv_show.number_of_seasons + 1):
         season = tv_show.seasons[season_number - 1]
 
-        with seasons_column, ui.card().classes("w-full"):
-            ui.html(f"<b>{season.title}</b>")
-
-            with ui.row().classes("w-full"):
+        with seasons_column, ui.card().classes("w-full no-shadow").style("border-radius: 15px"):
+            with ui.expansion(text=season.title, value=True).classes("w-full"), ui.row().classes("w-full"):
                 episodes = tv_show.seasons[season_number - 1].episodes
                 for episode_number in range(1, len(episodes) + 1):
                     episode_button = ui.button(str(episode_number),
@@ -166,6 +165,8 @@ async def page(room_uid: str):
         ui.navigate.to("/")
         return
 
+    portrait = await is_portrait()
+
     await draw_header()
 
     await _join_room(room_uid, user.uid)
@@ -177,19 +178,26 @@ async def page(room_uid: str):
         "episode": None
     }
 
-    with ui.row(wrap=False).classes("w-full"):
+    with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full"):
         player_card = ui.card()
         player_card.classes("no-shadow")
-        player_card.style("width: 80%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
+        if portrait:
+            player_card.style("width: 100%; border-radius: 15px")
+        else:
+            player_card.style("width: 80%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
         player_card.style("display: flex; justify-content: center; align-items: center;")
 
         users_card = ui.card()
         users_card.classes("no-shadow")
-        users_card.style("width: 20%; min-height: 80vh; max-height: 80vh; border-radius: 15px")
+        if portrait:
+            users_card.style("width: 100%; border-radius: 15px")
+        else:
+            users_card.style("width: 20%; min-height: 40vh; max-height: 40vh; border-radius: 15px")
+
         ui.timer(1, partial(_draw_users_list, room_uid, users_card))
 
     with player_card:
-        video_player = PlyrVideoPlayer(src="")
+        video_player = PlyrVideoPlayer(src="", poster_url="", minimal=portrait)
 
         video_player.on("play", partial(_on_play, room_uid, player_data))
         video_player.on("pause", partial(_on_pause, room_uid, player_data))

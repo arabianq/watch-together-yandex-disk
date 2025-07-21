@@ -2,7 +2,7 @@ from nicegui import ui
 
 import globals
 from web.custom_widgets import draw_header, ContentCard
-from web.misc import check_user
+from web.misc import check_user, is_portrait
 
 
 async def page():
@@ -11,8 +11,15 @@ async def page():
     if not await check_user():
         ui.navigate.to("/")
 
+    portrait = await is_portrait()
+
     await draw_header()
 
-    with ui.row(wrap=True).classes("w-full").style("margin: auto; gap: 16px"):
+    if portrait:
+        container = ui.column(wrap=False).classes("w-full items-center").style("margin: auto; gap: auto;")
+    else:
+        container = ui.row().classes("items-center").style("margin: auto; gap: auto;")
+
+    with container:
         for content in globals.MOVIES_DATABASE.contents:
             ContentCard(content.tmdb_id)

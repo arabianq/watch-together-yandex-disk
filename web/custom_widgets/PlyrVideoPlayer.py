@@ -6,7 +6,7 @@ from nicegui import ui
 class PlyrVideoPlayer:
     _plyr_installed = False
 
-    def __init__(self, src: str, poster_url: str = None):
+    def __init__(self, src: str, poster_url: str = None, minimal: bool = False):
         if not PlyrVideoPlayer._plyr_installed:
             install_plyr()
             PlyrVideoPlayer._plyr_installed = True
@@ -35,10 +35,15 @@ class PlyrVideoPlayer:
         options = {}
         options.setdefault("settings", [])
         options.setdefault("ratio", "16:9")
-        options.setdefault("controls",
-                           ["play-large", "play", "rewind", "fast-forward", "current-time", "progress", "duration",
-                            "mute", "volume", "pip", "airplay", "download", "fullscreen"]
-                           )
+        if minimal:
+            options.setdefault("controls",
+                               ["play-large", "play", "current-time", "progress", "mute", "pip", "airplay", "download",
+                                "fullscreen"])
+        else:
+            options.setdefault("controls",
+                               ["play-large", "play", "rewind", "fast-forward", "current-time", "progress", "duration",
+                                "mute", "volume", "pip", "airplay", "download", "fullscreen"]
+                               )
         js_options = str(options).replace("True", "true").replace("'", '"')
 
         js = f"""

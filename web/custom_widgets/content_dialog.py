@@ -30,7 +30,7 @@ class ContentDialog(ui.dialog):
         with self.card:
             self.additional_info_column = ui.column(wrap=False)
             self.additional_info_column.classes("w-full")
-            self.additional_info_column.style("width: 50%; gap: 0")
+            self.additional_info_column.style("width: 50%; gap: 0; white-space: nowrap")
 
         with self.additional_info_column:
             release_date = self.content.release_date.split("-")[::-1]
