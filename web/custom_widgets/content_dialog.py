@@ -49,9 +49,9 @@ class ContentDialog(ui.dialog):
                                      itertools.chain.from_iterable([s.episodes for s in self.content.seasons])])
                 ui.html(f"<b>Total Runtime: </b>{convert_runtime(total_runtime)}").style("font-size: 12px")
                 if self.content.in_production:
-                    ui.html(f"<b><i>Currently in production</i></b>").style("font-size: 12px")
+                    ui.html("<b><i>Currently in production</i></b>").style("font-size: 12px")
                 else:
-                    ui.html(f"<b><i>Finished</i></b>").style("font-size: 12px")
+                    ui.html("<b><i>Finished</i></b>").style("font-size: 12px")
 
         with self.card, ui.row(wrap=False).classes("w-full").style("display: flex; justify-content: center;"):
             ui.button("Create Room").on_click(self.create_room).props("rounded push")

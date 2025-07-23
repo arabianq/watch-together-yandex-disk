@@ -2,7 +2,7 @@ from nicegui import ui
 
 from web.custom_widgets.PlyrVideoPlayer import install_plyr
 from web.misc import default_page_setup
-from web.pages import *
+from web.pages import index_page, movies_page, rooms_page, room_page
 
 
 @ui.page("/")

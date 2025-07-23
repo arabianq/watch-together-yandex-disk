@@ -7,7 +7,7 @@ from nicegui import background_tasks, app
 
 import config
 import globals
-import web
+import web.routes
 from movies.db import MoviesDB
 from rooms.db import RoomsDB
 from users.db import UsersDB
@@ -57,7 +57,7 @@ async def after_startup():
 asyncio.run(before_startup())
 app.on_startup(after_startup())
 
-web.ui.run(
+web.routes.ui.run(
     host=config.HOST,
     port=config.PORT,
     dark=config.USE_DARK_THEME,

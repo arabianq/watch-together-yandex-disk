@@ -13,7 +13,7 @@ from web.misc import check_user, is_portrait
 
 
 def _check_room(room_uid: str):
-    return not globals.ROOMS_DATABASE.by_uid.get(room_uid) is None
+    return globals.ROOMS_DATABASE.by_uid.get(room_uid) is not None
 
 
 async def _join_room(room_uid: str, user_uid: str):
