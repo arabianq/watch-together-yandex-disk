@@ -76,9 +76,15 @@ def _draw_users_list(room_uid: str, users_card: ui.card):
                 ui.label(user.username)
 
 
-def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: ui.scroll_area, scroll_position: dict):
-    messages_scroll_area.clear()
+def _draw_messages(room_uid: str, current_user_uid: str, messages_scroll_area: ui.scroll_area, scroll_position: dict,
+                   room_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
+
+    if room_data["messages_amount"] == len(room.messages):
+        return
+    room_data["messages_amount"] = len(room.messages)
+
+    messages_scroll_area.clear()
     with messages_scroll_area:
         for user_uid, message_text in room.messages:
             user = globals.USERS_DATABASE.by_uid.get(user_uid)
@@ -193,6 +199,11 @@ async def page(room_uid: str):
         "episode": None
     }
 
+    room_data = {
+        "messages_amount": 0,
+        "members_hash": ""
+    }
+
     with ui.column(wrap=False).classes("w-full") if portrait else ui.row(wrap=False).classes("w-full items-stretch"):
         player_card = ui.card()
         player_card.classes("no-shadow items-center")
@@ -240,7 +251,7 @@ async def page(room_uid: str):
                     if text := message_input.value.strip():
                         globals.ROOMS_DATABASE.by_uid[room_uid].messages.append((user.uid, text))
                         message_input.value = ""
-                        _draw_messages(room_uid, user.uid, messages_scroll_area, messages_scroll_position)
+                        _draw_messages(room_uid, user.uid, messages_scroll_area, messages_scroll_position, room_data)
                         messages_scroll_area.scroll_to(percent=100)
 
                 with ui.row(wrap=False).classes("w-full items-center"):
@@ -248,7 +259,8 @@ async def page(room_uid: str):
                     message_input.on("keyup.enter", send_message)
                     ui.button(icon="send", on_click=send_message).on("keyup.enter", send_message).props("rounded")
 
-            ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area, messages_scroll_position))
+            ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area, messages_scroll_position,
+                                  room_data))
 
     with player_card:
         video_player = PlyrVideoPlayer(src="", poster_url="", minimal=portrait)
