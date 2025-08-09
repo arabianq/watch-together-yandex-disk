@@ -226,7 +226,7 @@ async def page(room_uid: str):
 
             users_card = ui.card()
             users_card.classes("w-full grow no-shadow")
-            users_card.style("border-radius: 15px")
+            users_card.style("border-radius: 15px; gap: 0px;")
             if portrait:
                 users_card.style("max-height: 20vh;")
             else:
@@ -241,7 +241,7 @@ async def page(room_uid: str):
 
             messages_card = ui.card()
             messages_card.classes("w-full grow no-shadow")
-            messages_card.style("border-radius: 15px")
+            messages_card.style("border-radius: 15px; gap: 0px;")
             if portrait:
                 messages_card.style("max-height: 20vh;")
             else:
