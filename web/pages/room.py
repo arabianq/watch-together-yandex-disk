@@ -245,6 +245,7 @@ async def page(room_uid: str):
 
                 with ui.row(wrap=False).classes("w-full items-center"):
                     message_input = ui.input("Message").classes("w-full").props("dense outlined")
+                    message_input.on("keyup.enter", send_message)
                     ui.button(icon="send", on_click=send_message).on("keyup.enter", send_message).props("rounded")
 
             ui.timer(0.1, partial(_draw_messages, room_uid, user.uid, messages_scroll_area, messages_scroll_position))
