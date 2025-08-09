@@ -65,11 +65,15 @@ def _change_episode(room_uid: str, tmdb_id: int, season_number: int, episode_num
     _draw_seasons(room_uid, tmdb_id, seasons_column, video_player, player_data)
 
 
-def _draw_users_list(room_uid: str, users_card: ui.card):
-    users_card.clear()
+def _draw_users_list(room_uid: str, users_scroll_area: ui.scroll_area, room_data: dict):
     room = globals.ROOMS_DATABASE.by_uid[room_uid]
-    with users_card, ui.scroll_area().classes("grow"):
-        ui.label("Members").classes("text-lg font-bold q-mb-md")
+
+    if room_data["members_hash"] == "".join([u for u in room.connected_users]):
+        return
+    room_data["members_hash"] = "".join([u for u in room.connected_users])
+
+    users_scroll_area.clear()
+    with users_scroll_area:
         for user_uid in list(dict.fromkeys(room.connected_users)):
             user = globals.USERS_DATABASE.by_uid[user_uid]
             with ui.card().classes("w-full"):
@@ -227,7 +231,13 @@ async def page(room_uid: str):
                 users_card.style("max-height: 20vh;")
             else:
                 users_card.style("min-height: 39vh;")
-            ui.timer(0.1, partial(_draw_users_list, room_uid, users_card))
+
+            with users_card.classes("justify-between"):
+                ui.label("Members").classes("text-lg font-bold q-mb-md")
+
+                messages_scroll_area = ui.scroll_area().classes("w-full")
+
+            ui.timer(0.1, partial(_draw_users_list, room_uid, messages_scroll_area, room_data))
 
             messages_card = ui.card()
             messages_card.classes("w-full grow no-shadow")
