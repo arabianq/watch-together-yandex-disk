@@ -18,7 +18,7 @@ async def page():
         await asyncio.sleep(1)
         ui.navigate.to("/contents")
 
-    portrait = is_portrait()
+    portrait = await is_portrait()
 
     await draw_header()
 
