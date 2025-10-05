@@ -9,6 +9,8 @@ from web.misc import check_user
 async def page():
     ui.page_title("Watch With Friends")
 
+    await ui.context.client.connected()
+
     if not await check_user():
         await handle_login()
 
