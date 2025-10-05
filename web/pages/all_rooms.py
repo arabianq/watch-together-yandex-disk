@@ -36,8 +36,8 @@ async def page():
                 ui.image(content.poster_url).style("width: 100px; border-radius: 15px")
 
                 with ui.column(wrap=False).style("gap: 0px;"):
-                    ui.html(f"{room.uid}")
-                    ui.html(f"<b>{content.title}</b>")
+                    ui.html(f"{room.uid}", sanitize=False)
+                    ui.html(f"<b>{content.title}</b>", sanitize=False)
 
                     users = [globals.USERS_DATABASE.by_uid[uid] for uid in room.connected_users]
-                    ui.html(f"<i>{", ".join(u.username for u in users)}</i>")
+                    ui.html(f"<i>{", ".join(u.username for u in users)}</i>", sanitize=False)

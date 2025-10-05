@@ -26,11 +26,11 @@ class ContentCard:
 
         with self.poster_column:
             with ui.column(wrap=False).classes("w-full").style("gap: 0px; margin: 0; padding: 3px 3px 3px 10px;"):
-                ui.html(f"<b>{self.content.title}</b>").style("font-size: 16px")
-                ui.html(f"<i>{self.content.og_title}</i>").style("font-size: 10px")
+                ui.html(f"<b>{self.content.title}</b>", sanitize=False).style("font-size: 16px")
+                ui.html(f"<i>{self.content.og_title}</i>", sanitize=False).style("font-size: 10px")
 
             with ui.column(wrap=True).classes("w-full").style("gap: 0px; margin: 0; padding: 3px 3px 10px 10px"):
-                ui.html(f"<b><i>{"<br>".join((self.content.genres))}</i></b>").style("font-size: 8px")
+                ui.html(f"<b><i>{"<br>".join(self.content.genres)}</i></b>", sanitize=False).style("font-size: 8px")
 
         self.card.on("mouseover", self.on_card_hover)
         self.card.on("mouseleave", self.on_card_unhover)

@@ -30,7 +30,7 @@ class PlyrVideoPlayer:
         )
 
         with ui.element("div").classes("plyr-container"):
-            ui.html(video_html)
+            ui.html(video_html, sanitize=False)
 
         options = {}
         options.setdefault("settings", [])

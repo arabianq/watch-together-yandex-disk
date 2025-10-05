@@ -12,5 +12,5 @@ async def draw_header():
 
             with ui.row(wrap=False).classes("items-center"):
                 if user := await check_user():
-                    ui.html(f"<b>{user.username}</b>")
+                    ui.html(f"<b>{user.username}</b>", sanitize=False)
                 ui.button(icon="logout", on_click=lambda: logout(redirect=True)).props("rounded")

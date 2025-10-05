@@ -23,9 +23,9 @@ class ContentDialog(ui.dialog):
             self.title_column.style("gap: 0; margin: 0; padding: 0;")
 
         with self.title_column:
-            ui.html(f"<b>{self.content.title}</b>").style("font-size: 22px")
-            ui.html(f"<i>{self.content.og_title}</i>").style("font-size: 14px")
-            ui.html(f"<b><i>{", ".join(self.content.genres)}</i></b>").style("font-size: 12px")
+            ui.html(f"<b>{self.content.title}</b>", sanitize=False).style("font-size: 22px")
+            ui.html(f"<i>{self.content.og_title}</i>", sanitize=False).style("font-size: 14px")
+            ui.html(f"<b><i>{", ".join(self.content.genres)}</i></b>", sanitize=False).style("font-size: 12px")
 
         with self.card:
             self.additional_info_column = ui.column(wrap=False)
@@ -35,23 +35,23 @@ class ContentDialog(ui.dialog):
         with self.additional_info_column:
             release_date = self.content.release_date.split("-")[::-1]
             release_date = ".".join(release_date)
-            ui.html(f"<b>Release Date: </b>{release_date}").style("font-size: 12px")
-            ui.html(f"<b>Average Score: </b>{round(self.content.vote_average, 2)}").style("font-size: 12px")
+            ui.html(f"<b>Release Date: </b>{release_date}", sanitize=False).style("font-size: 12px")
+            ui.html(f"<b>Average Score: </b>{round(self.content.vote_average, 2)}", sanitize=False).style("font-size: 12px")
 
             if self.content.type == "movie":
                 budget = "$" + f"{self.content.budget:_}".replace("_", ".")
-                ui.html(f"<b>Budget: </b>{budget}").style("font-size: 12px")
-                ui.html(f"<b>Runtime: </b>{convert_runtime(self.content.runtime)}").style("font-size: 12px")
+                ui.html(f"<b>Budget: </b>{budget}", sanitize=False).style("font-size: 12px")
+                ui.html(f"<b>Runtime: </b>{convert_runtime(self.content.runtime)}", sanitize=False).style("font-size: 12px")
             elif self.content.type == "tv":
-                ui.html(f"<b>Number of Seasons: </b>{self.content.number_of_seasons}").style("font-size: 12px")
-                ui.html(f"<b>Number of Episodes: </b>{self.content.number_of_episodes}").style("font-size: 12px")
+                ui.html(f"<b>Number of Seasons: </b>{self.content.number_of_seasons}", sanitize=False).style("font-size: 12px")
+                ui.html(f"<b>Number of Episodes: </b>{self.content.number_of_episodes}", sanitize=False).style("font-size: 12px")
                 total_runtime = sum([ep.runtime for ep in
                                      itertools.chain.from_iterable([s.episodes for s in self.content.seasons])])
-                ui.html(f"<b>Total Runtime: </b>{convert_runtime(total_runtime)}").style("font-size: 12px")
+                ui.html(f"<b>Total Runtime: </b>{convert_runtime(total_runtime)}", sanitize=False).style("font-size: 12px")
                 if self.content.in_production:
-                    ui.html("<b><i>Currently in production</i></b>").style("font-size: 12px")
+                    ui.html("<b><i>Currently in production</i></b>", sanitize=False).style("font-size: 12px")
                 else:
-                    ui.html("<b><i>Finished</i></b>").style("font-size: 12px")
+                    ui.html("<b><i>Finished</i></b>", sanitize=False).style("font-size: 12px")
 
         with self.card, ui.row(wrap=False).classes("w-full").style("display: flex; justify-content: center;"):
             ui.button("Create Room").on_click(self.create_room).props("rounded push")
